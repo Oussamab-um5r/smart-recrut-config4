@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarqube-postgres
+  namespace: tools-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarqube-postgres-server
+  template:
+    metadata:
+      labels:
+        app: sonarqube-postgres-server
+    spec:
+      containers:
+        - name: sonarqube-postgres
+          image: postgres
+          env:
+          - name: POSTGRES_DB
+            valueFrom:
+              configMapKeyRef:
+                name: sonarqube-postgres-config-map
+                key: sonarqube-postgres-db-db
+          - name: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: sonarqube-postgres-secrets
+                key: sonarqube-postgres-db-user
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sonarqube-postgres-secrets
+                key: sonarqube-postgres-db-password
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: sonarqube-postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: sonarqube-postgres-data
+          persistentVolumeClaim:
+            claimName: sonarqube-postgres-pvc-data

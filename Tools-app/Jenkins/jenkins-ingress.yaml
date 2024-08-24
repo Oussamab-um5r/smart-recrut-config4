@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jenkins-ingress
+  namespace: tools-app
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: 'websecure'
+    traefik.ingress.kubernetes.io/router.tls: 'true'
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: jenkins.smart-recrut.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: jenkins-service
+            port:
+              number: 8080

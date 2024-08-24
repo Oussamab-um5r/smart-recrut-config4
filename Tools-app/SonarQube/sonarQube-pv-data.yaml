@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: sonarqube-pv-data
+  labels:
+    type: local
+spec:
+  storageClassName: local-storage
+  claimRef:
+    name: sonarqube-pvc-data
+    namespace: tools-app
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  local:
+    path: /mnt/smart-recrut/config/tools-app/sonarQube-pv/sonarQube-pv-data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - minikube

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarqube
+  namespace: tools-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarqube-server
+  template:
+    metadata:
+      labels:
+        app: sonarqube-server
+    spec:
+      containers:
+        - name: sonarqube
+          image: sonarqube:lts
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "2000m"
+            requests:
+              memory: "1024Mi"
+              cpu: "500m"
+          env:
+          - name: SONARQUBE_JDBC_URL
+            valueFrom:
+              configMapKeyRef:
+                name: sonarqube-postgres-config-map
+                key: sonarqube-postgres-db-url
+          - name: SONARQUBE_JDBC_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: sonarqube-postgres-secrets
+                key: sonarqube-postgres-db-user
+          - name: SONARQUBE_JDBC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sonarqube-postgres-secrets
+                key: sonarqube-postgres-db-password
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: sonarqube-data
+              mountPath: "/opt/sonarqube/data/"
+            - name: sonarqube-extensions
+              mountPath: "/opt/sonarqube/extensions/"
+      volumes:
+        - name: sonarqube-data
+          persistentVolumeClaim:
+            claimName: sonarqube-pvc-data
+        - name: sonarqube-extensions
+          persistentVolumeClaim:
+            claimName: sonarqube-pvc-extensions
