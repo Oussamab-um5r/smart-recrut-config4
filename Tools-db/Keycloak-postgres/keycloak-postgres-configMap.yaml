@@ -8,5 +8,6 @@ metadata:
     reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
     reflector.v1.k8s.emberstack.com/reflection-auto-namespaces: "tools-app"
 data:
+  keycloak-postgres-db-vendor: POSTGRES
   keycloak-postgres-db-db: keycloak
   keycloak-postgres-db-url: jdbc:postgresql://keycloak-postgres-service.tools-db.svc:5432/keycloak
